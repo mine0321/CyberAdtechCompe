@@ -6,14 +6,8 @@ import time
 
 
 class MainHandler(tornado.web.RequestHandler):
-    def slp(self, *args, **kwargs):
-        #time.sleep(0.02)
-        return kwargs['callback']()
-
-    @tornado.web.asynchronous
-    @gen.coroutine
     def get(self):
-        t = yield gen.Task(self.slp)
+        
         self.write("hello world")
 
 application = tornado.web.Application([
