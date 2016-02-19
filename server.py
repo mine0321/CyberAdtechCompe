@@ -1,12 +1,14 @@
 import tornado.ioloop
 import tornado.web
 import tornado.httpserver
+import redis
 from tornado.web import gen
-import time
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write("hello world")
+        r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+        foo = r.get('foo')
+        self.write(foo)
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
@@ -14,7 +16,8 @@ class HealthHandler(tornado.web.RequestHandler):
 
 application = tornado.web.Application([
     (r"/", MainHandler),(r"/health", HealthHandler)
-])
+],
+)
 
 if __name__ == "__main__":
     server = tornado.httpserver.HTTPServer(application)
