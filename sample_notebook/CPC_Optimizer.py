@@ -91,6 +91,7 @@ if __name__ == '__main__':
     pre_time_list= [pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t]
     
     
+    #ここより上の処理はサンプルデータを作るための処理。実際に必要な処理はここより下の処理
     #以下のad_num,cost_list,json_data_input
     ad_num=ad_num#Handlerの入力値
     cost_list=cost_list#DBから集計
@@ -102,6 +103,15 @@ if __name__ == '__main__':
                      "starttime":time
                     }
     json_data_input=json.dumps(dict_data_input, indent=4)#KVSから取ってくる値
+    
+    dict_data_input=json.loads(json_data_input)#デコードする
+    cpcs=         dict_data_input["cpcs"]
+    pre_cpcs=     dict_data_input["pre_cpcs"]
+    cost_list=    dict_data_input["cost_list"]
+    pre_cost_list=dict_data_input["pre_cost_list"]
+    pre_time_list=dict_data_input["pre_time_list"]
+    time=         dict_data_input["starttime"]
+    
     
     cpcs, pre_cpcs, pre_cost_list, pre_time_list = document.optimizer(
         ad_num, cpcs, pre_cpcs, cost_list, pre_cost_list, pre_time_list,time)
