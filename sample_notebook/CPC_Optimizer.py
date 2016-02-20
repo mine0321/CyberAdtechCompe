@@ -4,7 +4,7 @@
 import numpy as np
 import time as ti
 from IPython.core.tests.test_formatters import numpy
-
+import json
 
 class Optimizer(object):
     """docstring for Optimizer."""
@@ -76,12 +76,27 @@ class Optimizer(object):
 
 if __name__ == '__main__':
     document = Optimizer()
+    
+    #サンプルデータ
     ad_num = 1
     list_length = 10
     cpcs = np.array([200, 133 ,100 ,80 ,67 ,57 ,50 ,44 ,40 ,36 ])#target_cpcを初期値とする
     pre_cpcs = np.zeros(list_length)#0を初期値とする
     cost_list    = np.array([20000, 13030 ,10000 ,8000 ,6700 ,5700 ,5000 ,4400 ,4000 ,3600 ])#広告主毎の最初から現在までにかかった費用
     pre_cost_list= np.zeros(list_length)#0を初期値とする
+    time=ti.time()
+    dict_data_input={"cpcs":cpcs,
+                     "pre_cpcs":pre_cpcs,
+                     "cost_list":cost_list,
+                     "pre_cost_list":pre_cost_list,
+                     "starttime":time
+                    }
+    
+    #ad_numは関数の引数, json_data_inputはkey_valueストアから取ってくる
+    json_data_input=json.dumps(dict_data_input, indent=4)
+    
+    
+    
     ti.sleep(1)
     pre_t=ti.time()
     ti.sleep(1)
@@ -89,6 +104,9 @@ if __name__ == '__main__':
     #特に0<=cpc<=target_cpcのような条件はここで入れていない
     cpcs, pre_cpcs, pre_cost_list, pre_time_list = document.optimizer(
         ad_num, cpcs, pre_cpcs, cost_list, pre_cost_list, pre_time_list)
+    
+    
+    
     print(cpcs)
     print(pre_cpcs)
     print(pre_cost_list)
