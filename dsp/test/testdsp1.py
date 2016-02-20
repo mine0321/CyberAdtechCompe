@@ -15,6 +15,11 @@ class Test(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def testCpc(self):
+        print(Dsp1.bit(3, 2, 4, 5, 6))
+        beta=Dsp1.executebeta(2000*30,[120, 133 ,100 ,80 ,67 ,57 ,50 ,44 ,40 ,36 ])#30s分のリクエスト,120円使用
+        Dsp1.update_cpc(beta)#beta
+        print("hoge")
 
     def testBit(self):
         self.assertEqual(1, 1, "ErrorMessage")
