@@ -7,14 +7,10 @@ from tornado.escape import json_encode
 import redis
 import json
 
-from sqlalchemy.pool import QueuePool
-import sqlalchemy.pool as pool
 from sqlalchemy import create_engine, exc
-from sqlalchemy.ext.declarative import declarative_base
 
 from sample_notebook.CTR_EstimationModel import CTR_Estimation
 
-Base = declarative_base()
 DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.amazonaws.com:3306/db'
 
 class MainHandler(tornado.web.RequestHandler):
