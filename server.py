@@ -1,9 +1,10 @@
 import tornado.ioloop
 import tornado.web
 import tornado.httpserver
+from tornado.web import gen
+
 import redis
 import json
-from tornado.web import gen
 
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
