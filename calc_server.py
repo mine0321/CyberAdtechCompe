@@ -3,12 +3,14 @@ import tornado.web
 import tornado.httpserver
 import redis
 import json
+import torndb
 from tornado.web import gen
 
 class MainHandler(tornado.web.RequestHandler):
-    def post(self):
-        data = tornado.escape.json_decode(self.request.body)
-        self.write(data)
+    def get(self):
+        db = torndb.Connection("dataallin.ca6eqefmtfhj.ap-northeast-1.rds.amazonaws.com:3306", "db", user='team_f', password='password')
+	rows = db.query("select Id,Title from post")
+	self.write("ssss")
 
 class WinHandler(tornado.web.RequestHandler):
     def get(self):
