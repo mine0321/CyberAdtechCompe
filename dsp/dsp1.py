@@ -28,7 +28,7 @@ class Dsp1():
         print "create testclass"
     
     @classmethod
-    def bit(id=None,site=None,floor_price=None,user=None,os=None):
+    def bit(cla,id=None,site=None,floor_price=None,user=None,os=None):
         #入札処理
         ctr=Dsp1.ctr(site,floor_price,user,os)#各広告のctr(クリック率)を予測
         cpc=Dsp1.cpc(site,floor_price,user,os,ctr)#各広告のcpc(クリック単価)を計算
@@ -37,7 +37,7 @@ class Dsp1():
         #どの広告主で入札したか記録しておく
         Dsp1.log[id]=advertiser
         
-        return price*1000,advertiser #ここで1000倍する 
+        return int(price*1000),advertiser #ここで1000倍する 
 
     @staticmethod
     def ctr(site=None,floor_price=None,user=None,os=None):
@@ -56,9 +56,9 @@ class Dsp1():
         return price, advertiser
     
     @classmethod
-    def notice(id,price,isClick):
+    def notice(cla,id,second_price,isClick):
         selected_advertiser=Dsp1.log[id]
-        Dsp1.budgets[selected_advertiser]=Dsp1.budgets[selected_advertiser]-price
+        Dsp1.budgets[selected_advertiser]=Dsp1.budgets[selected_advertiser]-second_price/1000
         return Dsp1.budgets[selected_advertiser]
     
     
