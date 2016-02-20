@@ -26,7 +26,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.set_status(200)
 
         json = {
-            'id': data['id'],
+            'id': id,
             'bidPrice': cpc * ctr[advertiserId],
             'advertiserId': advertiserId
         }
