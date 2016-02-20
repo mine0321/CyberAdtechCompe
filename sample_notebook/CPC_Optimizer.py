@@ -5,6 +5,7 @@ import numpy as np
 import time as ti
 from IPython.core.tests.test_formatters import numpy
 import json
+import copy
 
 class Optimizer(object):
     """docstring for Optimizer."""
@@ -18,11 +19,10 @@ class Optimizer(object):
             20000000, 12000000, 12000000, 8000000, 8000000,
             8000000, 4000000, 4000000, 2000000, 2000000])#この値は更新しない
         self.target_cpcs = [200, 133 ,100 ,80 ,67 ,57 ,50 ,44 ,40 ,36 ]#この値は更新しない
-        self.starttime = ti.time()
         self.limit_time = float(60 * 60 * 3)#この値は更新しない
 
 
-    def optimizer(self, ad_num, cpcs, pre_cpcs, cost_list, pre_cost_list, pre_time_list):#更新する広告主番号、cpc,前回のcpc,現在までに使った金額、前回までに使った金額、前回の時間()
+    def optimizer(self, ad_num, cpcs, pre_cpcs, cost_list, pre_cost_list, pre_time_list ,starttime):#更新する広告主番号、cpc,前回のcpc,現在までに使った金額、前回までに使った金額、前回の時間()
         
         cpc = cpcs[ad_num]
         pre_cpc=pre_cpcs[ad_num]
@@ -34,8 +34,8 @@ class Optimizer(object):
         
         target_cpc = self.target_cpcs[ad_num]
         
-        time_rate=    (time-self.starttime)/float(self.limit_time)#時間の消費比,最初から今回までの時間/全時間
-        pre_time_rate=(pre_time-self.starttime)/float(self.limit_time)#時間の消費比,最初から前回までの時間/全時間
+        time_rate=    (time-starttime)/float(self.limit_time)#時間の消費比,最初から今回までの時間/全時間
+        pre_time_rate=(pre_time-starttime)/float(self.limit_time)#時間の消費比,最初から前回までの時間/全時間
         budget_rate    =cost/float(budget)# 予算の消費比,最初から今回までに使った予算/全予算
         pre_budget_rate=pre_cost/float(budget)# 予算の消費比,最初から前回までに使った予算/全予算
         beta     = budget_rate/time_rate#１より多いと予算を使いすぎ,1より少ないと予算を使わなすぎ
@@ -64,7 +64,7 @@ class Optimizer(object):
         elif target_cpc<next_cpc:
             next_cpc=target_cpc
             
-        pre_cpcs=cpcs.copy()
+        pre_cpcs=copy.copy(cpcs)
         cpcs[ad_num]=next_cpc
         
         pre_cost_list[ad_num]=cost
@@ -80,33 +80,45 @@ if __name__ == '__main__':
     #サンプルデータ
     ad_num = 1
     list_length = 10
-    cpcs = np.array([200, 133 ,100 ,80 ,67 ,57 ,50 ,44 ,40 ,36 ])#target_cpcを初期値とする
-    pre_cpcs = np.zeros(list_length)#0を初期値とする
-    cost_list    = np.array([20000, 13030 ,10000 ,8000 ,6700 ,5700 ,5000 ,4400 ,4000 ,3600 ])#広告主毎の最初から現在までにかかった費用
-    pre_cost_list= np.zeros(list_length)#0を初期値とする
+    cpcs = [200, 133 ,100 ,80 ,67 ,57 ,50 ,44 ,40 ,36 ]#target_cpcを初期値とする
+    pre_cpcs = [0,0,0,0,0,0,0,0,0,0]#0を初期値とする
+    cost_list    = [20000, 13030 ,10000 ,8000 ,6700 ,5700 ,5000 ,4400 ,4000 ,3600 ]#広告主毎の最初から現在までにかかった費用
+    pre_cost_list= [0,0,0,0,0,0,0,0,0,0]#0を初期値とする
     time=ti.time()
+    ti.sleep(1)
+    pre_t=ti.time()
+    ti.sleep(1)
+    pre_time_list= [pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t]
+    
+    
+    #以下のad_num,cost_list,json_data_input
+    ad_num=ad_num#Handlerの入力値
+    cost_list=cost_list#DBから集計
     dict_data_input={"cpcs":cpcs,
                      "pre_cpcs":pre_cpcs,
                      "cost_list":cost_list,
                      "pre_cost_list":pre_cost_list,
+                     "pre_time_list":pre_time_list,
+                     "starttime":time
+                    }
+    json_data_input=json.dumps(dict_data_input, indent=4)#KVSから取ってくる値
+    
+    cpcs, pre_cpcs, pre_cost_list, pre_time_list = document.optimizer(
+        ad_num, cpcs, pre_cpcs, cost_list, pre_cost_list, pre_time_list,time)
+    
+    
+    dict_data_output={"cpcs":cpcs,
+                     "pre_cpcs":pre_cpcs,
+                     "cost_list":cost_list,
+                     "pre_cost_list":pre_cost_list,
+                     "pre_time_list":pre_time_list,
                      "starttime":time
                     }
     
-    #ad_numは関数の引数, json_data_inputはkey_valueストアから取ってくる
-    json_data_input=json.dumps(dict_data_input, indent=4)
+    #これをKVSに保存する
+    json_data_output=json.dumps(dict_data_input, indent=4)
     
-    
-    
-    ti.sleep(1)
-    pre_t=ti.time()
-    ti.sleep(1)
-    pre_time_list= np.array([pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t,pre_t])
-    #特に0<=cpc<=target_cpcのような条件はここで入れていない
-    cpcs, pre_cpcs, pre_cost_list, pre_time_list = document.optimizer(
-        ad_num, cpcs, pre_cpcs, cost_list, pre_cost_list, pre_time_list)
-    
-    
-    
+    print(json_data_output)
     print(cpcs)
     print(pre_cpcs)
     print(pre_cost_list)
