@@ -39,10 +39,10 @@ class MainHandler(tornado.web.RequestHandler):
         self.write(json_encode(json))
 
     def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click):
-        c = engine.connect()
+        # c = engine.connect()
         try:
             c.execute("""INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7})""".format(floor_price, site, device, user, advertiser_id, bit_price, win, is_click))
-            c.close()
+            # c.close()
         except exc.DBAPIError, e:
             if e.connection_invalidated:
                 pass
@@ -65,6 +65,7 @@ application = tornado.web.Application([
 
 if __name__ == "__main__":
     engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
+    c = engine.connect()
     document = CTR_Estimation()
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
