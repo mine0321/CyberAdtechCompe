@@ -9,12 +9,6 @@ import json
 from sample_notebook.CTR_EstimationModel import CTR_Estimation
 
 class MainHandler(tornado.web.RequestHandler):
-
-    def asyncInsert(self, *args, **kwargs):
-        print("async")
-
-    @tornado.web.asynchronous
-    @gen.coroutine
     def post(self):
         # r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         # foo = r.get('foo')
@@ -35,7 +29,7 @@ class HealthHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("hello world")
 
-class WinHandler
+class WinHandler(tornado.web.RequestHandler):
     def get(self):
         print(self.request.body)
 
