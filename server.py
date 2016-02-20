@@ -11,17 +11,18 @@ from sample_notebook.CTR_EstimationModel import CTR_Estimation
 
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
-        # r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
-        # foo = r.get('foo')
+        r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+        cpc = r.get('cpc')
         data = tornado.escape.json_decode(self.request.body)
         document = CTR_Estimation()
         result = document.estimation(data)
 
+        self.set_header('Content-Type', 'application/json')
         self.set_status(200)
 
         json = {
             'id': data['id'],
-            'bidPrice': 1000 * result[1],
+            'bidPrice': cpc * result[1],
             'advertiserId': "1"
         }
         self.write(json_encode(json))
