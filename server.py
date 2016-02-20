@@ -25,8 +25,8 @@ class MainHandler(tornado.web.RequestHandler):
         ctr = document.estimation(data)
         advertiserId = '1'
 
-        self.insertData(data['id'], data['floorPrice'], data['site'], data['device'], data['user'], 1, 20, 0, 0)
         self.responseJson(data['id'], cpc, 0.1, advertiserId)
+        self.insertData(data['id'], data['floorPrice'], data['site'], data['device'], data['user'], 1, 20, 0, 0)
 
     def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
