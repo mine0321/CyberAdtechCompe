@@ -26,7 +26,7 @@ class MainHandler(tornado.web.RequestHandler):
         advertiserId = '1'
 
         self.responseJson(data['id'], cpc, 0.1, advertiserId)
-        self.insertData(data['id'], data['floorPrice'], data['site'], data['device'], data['user'], 1, 20, 0, 0)
+        self.insertData(data['id'], data['floorPrice'], data['site'], data['device'], data['user'], 1, 20, 0, 0, data['id'])
 
     def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
@@ -38,10 +38,10 @@ class MainHandler(tornado.web.RequestHandler):
         }
         self.write(json_encode(json))
 
-    def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click):
+    def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
         c = engine.connect()
         try:
-            c.execute("""INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7})""".format(floor_price, site, device, user, advertiser_id, bit_price, win, is_click))
+            c.execute("""INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7}, '{8}');""".format(floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id))
             c.close()
         except exc.DBAPIError, e:
             if e.connection_invalidated:
@@ -50,7 +50,17 @@ class MainHandler(tornado.web.RequestHandler):
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write("hello world")
+        data = tornado.escape.json_decode(self.request.body)
+        self.updateData(data['id'], data['price'], data['isClick'])
+
+    def updateData(self, request_id, second_price, is_click):
+        c = engine.connect()
+        try:
+            c.execute("""UPDATE requests SET second_price = {0}, is_click = {1} WHERE request_id = {2};""".format(second_price, is_click, request_id))
+            c.close()
+        except exc.DBAPIError, e:
+            if e.connection_invalidated:
+                pass
 
 class WinHandler(tornado.web.RequestHandler):
     def get(self):
