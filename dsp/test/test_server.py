@@ -11,7 +11,7 @@ from tornado.escape import to_unicode
 from tornado.testing import AsyncTestCase, AsyncHTTPClient,gen_test
 from tornado.httpclient import HTTPError
 
-#server.pyのテスト 参考 http://yukirinmk2.hatenablog.com/entry/2014/12/21/050133
+#server.pyのテスト 参考 http://www.tornadoweb.org/en/stable/testing.html
 class TestServer(AsyncTestCase):
     @tornado.testing.gen_test
     def test_http_fetch(self):
