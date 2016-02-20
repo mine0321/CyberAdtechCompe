@@ -63,11 +63,28 @@ class WinHandler(tornado.web.RequestHandler):
             print(e)
             # if e.connection_invalidated:
 
+class CpcHandler(tornado.web.RequestHandler):
+    def post(self):
+        data = tornado.escape.json_decode(self.request.body)
+        ad_num = data["ad_num"]
+        SELECT advertiser_id,sum(bit_price) as cost FROM db.requests WHERE win=1 GROUP BY advertiser_id;
+
+
+        self.updateData(data['id'], data['price'], data['isClick'])
+
+    def updateData(self, request_id, second_price, is_click):
+        c = engine.connect()
+        try:
+            c.execute("""UPDATE requests SET second_price = {0}, is_click = {1} WHERE request_id = '{2}'""".format(second_price, is_click, request_id))
+            c.close()
+        except exc.DBAPIError, e:
+            print(e)
 
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/health", HealthHandler),
-    (r"/win", WinHandler)
+    (r"/win", WinHandler),
+    (r"/cpc", CpcHandler)
 ],
 )
 
