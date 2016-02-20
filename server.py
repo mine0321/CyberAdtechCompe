@@ -41,11 +41,12 @@ class MainHandler(tornado.web.RequestHandler):
     def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
         c = engine.connect()
         try:
-            c.execute("""INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7}, '{8}');""".format(floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id))
+            c.execute("""INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7}, '{8}')""".format(floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id))
             c.close()
         except exc.DBAPIError, e:
-            if e.connection_invalidated:
-                pass
+            print(e)
+            # if e.connection_invalidated:
+            #     pass
 
 
 class HealthHandler(tornado.web.RequestHandler):
@@ -60,11 +61,12 @@ class WinHandler(tornado.web.RequestHandler):
     def updateData(self, request_id, second_price, is_click):
         c = engine.connect()
         try:
-            c.execute("""UPDATE requests SET second_price = {0}, is_click = {1} WHERE request_id = {2};""".format(second_price, is_click, request_id))
+            c.execute("""UPDATE requests SET second_price = {0}, is_click = {1} WHERE request_id = {2}""".format(second_price, is_click, request_id))
             c.close()
         except exc.DBAPIError, e:
-            if e.connection_invalidated:
-                pass
+            print(e)
+            # if e.connection_invalidated:
+
 
 application = tornado.web.Application([
     (r"/", MainHandler),
