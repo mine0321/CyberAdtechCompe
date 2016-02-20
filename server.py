@@ -2,6 +2,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.httpserver
 from tornado.web import gen
+from tornado.escape import json_encode
 
 import redis
 import json
