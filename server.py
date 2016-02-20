@@ -7,7 +7,13 @@ from tornado.escape import json_encode
 import redis
 import json
 
+from sqlalchemy.pool import QueuePool
+import sqlalchemy.pool as pool
+from sqlalchemy import create_engine
+
 from sample_notebook.CTR_EstimationModel import CTR_Estimation
+
+DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.amazonaws.com:3306/db'
 
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
@@ -47,6 +53,8 @@ application = tornado.web.Application([
 )
 
 if __name__ == "__main__":
+    server_pool = pool.QueuePool(pool_size=10)
+    engine = create_engine(DATABASE, pool=server_pool)
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
     server.start(0)
