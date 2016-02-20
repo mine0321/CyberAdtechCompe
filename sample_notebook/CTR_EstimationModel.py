@@ -34,5 +34,5 @@ class CTR_Estimation(object):
         return [float(model.predict(test_sample))for model in xgb_models]
 
     def hashnum(self, modnum, data):
-    mod = 10 ** modnum
-    return hash(data) % mod
+        mod = 10 ** modnum
+        return hash(data) % mod
