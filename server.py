@@ -15,12 +15,12 @@ class MainHandler(tornado.web.RequestHandler):
         cpc = int(r.get('cpc'))
 
         data = tornado.escape.json_decode(self.request.body)
-        document = CTR_Estimation()
-        ctr = document.estimation(data)
+        # document = CTR_Estimation()
+        # ctr = document.estimation(data)
         advertiserId = 1
 
         gen.Task(self.insert(data))
-        self.responseJson(data['id'], cpc, ctr, advertiserId)
+        self.responseJson(data['id'], cpc, 0.1, advertiserId)
 
     def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
