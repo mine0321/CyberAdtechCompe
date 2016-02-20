@@ -41,7 +41,7 @@ class MainHandler(tornado.web.RequestHandler):
     def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click):
         c = engine.connect()
         try:
-            c.execute("INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})".format(floor_price, site, device, user, advertiser_id, bit_price, win, is_click))
+            c.execute("""INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7})""".format(floor_price, site, device, user, advertiser_id, bit_price, win, is_click))
             c.close()
         except exc.DBAPIError, e:
             if e.connection_invalidated:
