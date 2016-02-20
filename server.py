@@ -15,9 +15,9 @@ class MainHandler(tornado.web.RequestHandler):
         cpc = int(r.get('cpc'))
 
         data = tornado.escape.json_decode(self.request.body)
-        # document = CTR_Estimation()
-        # ctr = document.estimation(data)
-        advertiserId = 1
+        document = CTR_Estimation()
+        ctr = document.estimation(data)
+        advertiserId = '1'
 
         self.responseJson(data['id'], cpc, 0.1, advertiserId)
 
@@ -27,7 +27,7 @@ class MainHandler(tornado.web.RequestHandler):
         json = {
             'id': id,
             'bidPrice': cpc * ctr, #[advertiserId],
-            'advertiserId': advertiserId
+            'advertiserId': advertiserId,
         }
         self.write(json_encode(json))
 
