@@ -10,12 +10,12 @@ class CTR_Estimation(object):
     # output : list format  ( Advertiser order)
     #
     # e.g.)
-    # document = CTR_Estimation(sample_dict)
+    # document = CTR_Estimation()
     # document.estimation(sample_dict)
     #
     def __init__(self):
         self.xgb_models = [joblib.load(
-            '../models/Ad%d_xgb.pkl' % ind) for ind in xrange(1, 11)]
+            'models/Ad%d_xgb.pkl' % ind) for ind in xrange(1, 11)]
         self.modnum = 3
 
     def estimation(self, sample_dict):
