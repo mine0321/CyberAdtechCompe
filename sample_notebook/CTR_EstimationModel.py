@@ -3,7 +3,6 @@
 
 import xgboost as xgb
 from sklearn.externals import joblib
-import numpy as np
 
 class CTR_Estimation(object):
     """docstring for CTR_Estimation"""
@@ -20,7 +19,7 @@ class CTR_Estimation(object):
         self.modnum = 3
 
     def estimation(self, sample_dict):
-        if sample_dict['floorPrice'] == np.nan:
+        if sample_dict['floorPrice'] is None:
             sample_dict['floorPrice'] = 0
         if sample_dict['device'] == 'iOS':
             test_sample = xgb.DMatrix(
