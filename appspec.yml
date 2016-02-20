@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /var/www/sample-app
+    destination: /var/www/adtech_compe_f
 permissions:
    - object: /var/www/
      pattern: "**"
@@ -12,15 +12,13 @@ hooks:
     - location: scripts/stop_server.sh
       timeout: 300
       runas: root
-  BeforeInstall:
-    - location: scripts/clean.sh
-      timeout: 300
-      runas: root
-  AfterInstall:
-    - location: scripts/bundle_install.sh
+  ApplicationRestart:
+    - location: scripts/restart_server.sh
       timeout: 300
       runas: root
   ApplicationStart:
     - location: scripts/start_server.sh
       timeout: 300
       runas: root
+#  UpdateSource:
+#    - location: scripts/update_source.sh
