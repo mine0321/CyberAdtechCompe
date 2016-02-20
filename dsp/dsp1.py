@@ -4,7 +4,6 @@ Created on 2016/02/19
 
 @author: develop
 '''
-import time
 from operator import add,sub,mul,truediv
 from CodeWarrior.CodeWarrior_suite import target
 #メソッドの中で定義すればインスタンス変数でFOO
@@ -12,7 +11,6 @@ from CodeWarrior.CodeWarrior_suite import target
 class Dsp1():
     num_all_request=2000 * 60 * 60 * 3#2000QPS * 60s * 60s * 3h
     
-    start_time=None
     
     isRemainBudgets = (True,True,True,True,True,True,True,True,True,True)#予算が残っているか
     all_budgets = [20000000,12000000,12000000,8000000,8000000,8000000,4000000,4000000,2000000,2000000]#総予算
@@ -29,17 +27,8 @@ class Dsp1():
     def __init__(self):
         print "create testclass"
     
-    @staticmethod
-    def millseconds():
-        millis = int(round(time.time() * 1000))
-        return millis
-    
     @classmethod
     def bit(cla,id=None,site=None,floor_price=None,user=None,os=None):
-        
-        if(Dsp1.start_time==None):
-            Dsp1.start_time=Dsp1.millseconds()
-        
         #入札処理
         ctr=Dsp1.ctr(site,floor_price,user,os)#各広告のctr(クリック率)を予測
         cpc=Dsp1.cpc(site,floor_price,user,os,ctr)#各広告のcpc(クリック単価)を計算
@@ -74,10 +63,10 @@ class Dsp1():
     
     
     @classmethod
-    def executebeta(cls,request_span,used_budget):
-        timeRate=(Dsp1.millseconds()-Dsp1.start_time)/float(1000*60*60*3)#時間の消費比,最初から今回までにあったリクエスト数/全リクエスト数
+    def executebeta(cls,request_span,used_budget_span):
+        timeRate=float(request_span)/Dsp1.num_all_request#時間の消費比,前回のバッチ処理から今回までにあったリクエスト数/全リクエスト数
         timeRate=[timeRate for b in Dsp1.all_budgets]#timeRateを行列にする
-        budgetRate=map(truediv,used_budget,Dsp1.all_budgets)# 予算の消費比,最初から今回までに使った予算/全予算
+        budgetRate=map(truediv,used_budget_span,Dsp1.all_budgets)# 予算の消費比,前回のバッチ処理から今回までに使った予算/全予算
         
         #target_cpc*beta = cpcとなる広告主毎の値
         beta = map(truediv,budgetRate,timeRate)#１より多いと予算を使いすぎ,1より少ないと予算を使わなすぎ
