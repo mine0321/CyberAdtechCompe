@@ -10,8 +10,6 @@ import json
 from sample_notebook.CTR_EstimationModel import CTR_Estimation
 
 class MainHandler(tornado.web.RequestHandler):
-    @tornado.web.asynchronous
-    @gen.coroutine
     def post(self):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         cpc = int(r.get('cpc'))
@@ -33,11 +31,6 @@ class MainHandler(tornado.web.RequestHandler):
             'advertiserId': advertiserId
         }
         self.write(json_encode(json))
-
-    def insert(self, *args, **kwargs, data):
-        print(data)
-        return kwargs['callback']()
-
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
