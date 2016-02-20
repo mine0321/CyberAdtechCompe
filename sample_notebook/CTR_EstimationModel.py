@@ -10,8 +10,9 @@ class CTR_Estimation(object):
     # output : list format  ( Advertiser order)
     #
     # e.g.)
-    # document = CTR_Estimation()
+    # document = CTR_Estimation(sample_dict)
     # document.estimation(sample_dict)
+    #
     def __init__(self):
         self.xgb_models = [joblib.load(
             '../models/Ad%d_xgb.pkl' % ind) for ind in xrange(1, 11)]
@@ -30,9 +31,8 @@ class CTR_Estimation(object):
                 self.hashnum(self.modnum, sample_dict['site']),
                 self.hashnum(self.modnum, sample_dict['user']), 1,
                 sample_dict['floorPrice']])
-        return [float(
-            model.predict(test_sample))for model in self.xgb_models]
+        return [float(model.predict(test_sample))for model in xgb_models]
 
     def hashnum(self, modnum, data):
-        mod = 10 ** modnum
-        return hash(data) % mod
+    mod = 10 ** modnum
+    return hash(data) % mod
