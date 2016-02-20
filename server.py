@@ -19,7 +19,6 @@ class MainHandler(tornado.web.RequestHandler):
         # ctr = document.estimation(data)
         advertiserId = 1
 
-        gen.Task(self.insert(data))
         self.responseJson(data['id'], cpc, 0.1, advertiserId)
 
     def responseJson(self, id, cpc, ctr, advertiserId):
