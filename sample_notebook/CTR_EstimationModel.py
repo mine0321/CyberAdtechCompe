@@ -31,7 +31,7 @@ class CTR_Estimation(object):
                 self.hashnum(self.modnum, sample_dict['site']),
                 self.hashnum(self.modnum, sample_dict['user']), 1,
                 sample_dict['floorPrice']])
-        return [float(model.predict(test_sample))for model in xgb_models]
+        return [float(model.predict(test_sample))for model in self.xgb_models]
 
     def hashnum(self, modnum, data):
         mod = 10 ** modnum
