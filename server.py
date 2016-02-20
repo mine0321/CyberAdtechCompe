@@ -21,7 +21,7 @@ class MainHandler(tornado.web.RequestHandler):
 
         json = {
             'id': data['id'],
-            'bidPrice': 200,
+            'bidPrice': 1000 * result[1],
             'advertiserId': "1"
         }
         self.write(json_encode(json))
