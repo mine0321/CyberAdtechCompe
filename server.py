@@ -34,12 +34,10 @@ class MainHandler(tornado.web.RequestHandler):
             'advertiserId': advertiserId
         }
         self.write(json_encode(json))
-            db = torndb.Connection("dataallin.ca6eqefmtfhj.ap-northeast-1.rds.amazonaws.com:3306", "db", user='team_f', password='password')
-            db.execute("INSERT INTO posts (id, floor_price, site, device, user, advertiser_id, bit_price) VALUES (%s, %s, %s, %s, %s, %s ,%s)", data['id'], data['floorPrice'], data['site'], data['device'], data['user'], advertiserId, price)
 
     def insert(self, data, price, advertiserId):
-
-
+        db = torndb.Connection("dataallin.ca6eqefmtfhj.ap-northeast-1.rds.amazonaws.com:3306", "db", user='team_f', password='password')
+        db.execute("INSERT INTO posts (id, floor_price, site, device, user, advertiser_id, bit_price) VALUES (%s, %s, %s, %s, %s, %s ,%s)", data['id'], data['floorPrice'], data['site'], data['device'], data['user'], advertiserId, price)
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
