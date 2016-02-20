@@ -12,7 +12,7 @@ from sample_notebook.CTR_EstimationModel import CTR_Estimation
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
-        cpc = r.get('cpc')
+        cpc = int(r.get('cpc'))
 
         data = tornado.escape.json_decode(self.request.body)
         document = CTR_Estimation()
