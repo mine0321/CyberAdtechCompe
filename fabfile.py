@@ -6,6 +6,10 @@ from fabric.api import cd
 env.hosts = ["52.69.144.199"]
 env.user = 'ec2-user'
 
+def deploy():
+    pull()
+    restart()
+
 def pull():
     with cd("/var/www/adtech_compe_f"):
         sudo('git pull')
