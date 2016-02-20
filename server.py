@@ -61,7 +61,7 @@ class WinHandler(tornado.web.RequestHandler):
     def updateData(self, request_id, second_price, is_click):
         c = engine.connect()
         try:
-            c.execute("""UPDATE requests SET second_price = {0}, is_click = {1} WHERE request_id = {2}""".format(second_price, is_click, request_id))
+            c.execute("""UPDATE requests SET second_price = {0}, is_click = {1} WHERE request_id = '{2}'""".format(second_price, is_click, request_id))
             c.close()
         except exc.DBAPIError, e:
             print(e)
