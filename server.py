@@ -50,6 +50,10 @@ class MainHandler(tornado.web.RequestHandler):
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
+        print("Hello")
+
+class WinHandler(tornado.web.RequestHandler):
+    def post(self):
         data = tornado.escape.json_decode(self.request.body)
         self.updateData(data['id'], data['price'], data['isClick'])
 
@@ -61,10 +65,6 @@ class HealthHandler(tornado.web.RequestHandler):
         except exc.DBAPIError, e:
             if e.connection_invalidated:
                 pass
-
-class WinHandler(tornado.web.RequestHandler):
-    def get(self):
-        print(self.request.body)
 
 application = tornado.web.Application([
     (r"/", MainHandler),
