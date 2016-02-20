@@ -13,19 +13,26 @@ class MainHandler(tornado.web.RequestHandler):
     def post(self):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         cpc = r.get('cpc')
+        
         data = tornado.escape.json_decode(self.request.body)
         document = CTR_Estimation()
-        result = document.estimation(data)
+        ctr = document.estimation(data)
 
+        self.responseJson(data['id'], cpc, ctr)
+        advertiserId = 1
+
+    def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
         self.set_status(200)
 
         json = {
             'id': data['id'],
-            'bidPrice': cpc * result[1],
-            'advertiserId': "1"
+            'bidPrice': cpc * ctr[advertiserId],
+            'advertiserId': advertiserId
         }
+
         self.write(json_encode(json))
+
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
