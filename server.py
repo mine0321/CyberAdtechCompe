@@ -21,7 +21,6 @@ class MainHandler(tornado.web.RequestHandler):
         cpc = int(r.get('cpctest'))
 
         data = tornado.escape.json_decode(self.request.body)
-        document = CTR_Estimation()
         ctr = document.estimation(data)
         advertiserId = '1'
 
@@ -55,6 +54,7 @@ application = tornado.web.Application([
 if __name__ == "__main__":
     # server_pool = pool.QueuePool(pool_size=10)
     # engine = create_engine(DATABASE, pool=server_pool)
+    document = CTR_Estimation()
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
     server.start(0)
