@@ -36,3 +36,6 @@ def checkout(branch='master'):
     with cd("/var/www/adtech_compe_f"):
         sudo('git fetch')
         sudo('git checkout {}'.format(branch))
+
+def supervisord():
+    sudo('supervisord -c /etc/supervisord.conf')
