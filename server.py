@@ -20,6 +20,7 @@ class MainHandler(tornado.web.RequestHandler):
         cpc = int(r.get('cpctest'))
         data = tornado.escape.json_decode(self.request.body)
         ctr = document.estimation(data)
+        cpc = np.arange(0, 10)
         bit_list = np.array(ctr) * np.array(cpc)
         advertiserId = str(np.argmax(bit_list))
         bit = np.max(bit_list)
