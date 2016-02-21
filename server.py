@@ -9,8 +9,6 @@ import threading
 import redis
 import json
 
-import logging
-
 from sqlalchemy import create_engine, exc
 from sample_notebook.CPC_Optimizer import Optimizer
 from sample_notebook.CTR_EstimationModel import CTR_Estimation
@@ -19,56 +17,33 @@ DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.am
 
 
 class MainHandler(tornado.web.RequestHandler):
-    def post(self):
+    def get(self):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
-        cpc = int(r.get('cpctest'))
-        # data = tornado.escape.json_decode(self.request.body)
-        data = {
-            "id": "ididid",
-            "floorPrice": None,
-            "site": "medianame",
-            "device": "device",
-            "user": "a9102910201",
-            "test": "0",
-        }
-        ctr = 0.5#document.estimation(data)
-        cpc = np.arange(0, 10)
-        bit_list = np.array(ctr) * np.array(cpc)
+        cpc = r.get('cpc')
+        r.set(data['id'],self.request.body)
+
+        data = tornado.escape.json_decode(self.request.body)
+        # ctr = document.estimation(data)
+        cpc = np.array(cpc.items())
+        # bit_list = np.array(ctr) * np.array(cpc)
+        bit_list = 0.5 * np.array(cpc)
         advertiserId = str(np.argmax(bit_list))
         bit = np.max(bit_list)
 
-        self.responseJson(data['id'], bit, 0.1, advertiserId)
-        self.logFile(data['id'], data['floorPrice'], data['site'], data['device'], data['user'], advertiserId, bit, 0, 0, data['id'])
-        # insert_thread = threading.Thread(target = self.insertData, args=[data['id'], data['floorPrice'], data['site'], data['device'],
-        #                                                             data['user'], advertiserId, bit, 0, 0, data['id']])
-        # insert_thread.start()
+        alpha_list = tornado.escape.json_decode(r.get('alpha'))
+        beta_list = tornado.escape.json_decode(r.get('beta'))
 
-    def responseJson(self, id, cpc, ctr, advertiserId):
+        self.responseJson(data['id'], bit, advertiserId, alpha_list[advertiserId], beta_list[advertiserId])
+
+    def responseJson(self, id, bit, advertiserId, a ,b):
         self.set_header('Content-Type', 'application/json')
         self.set_status(200)
         json = {
             'id': id,
-            'bidPrice': cpc * ctr,  # [advertiserId],
+            'bidPrice': bit * a + b
             'advertiserId': advertiserId,
         }
         self.write(json_encode(json))
-
-    def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
-        c = engine.connect()
-        try:
-            c.execute(
-                """INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7}, '{8}')""".format(
-                    floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id))
-            c.close()
-        except exc.DBAPIError, e:
-            print(e)
-            # if e.connection_invalidated:
-            #     pass
-
-    def logFile(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
-        logging.log(100, {'id':id, 'floor_price':floor_price, 'device': device, 'user': user, 'advertiser_id': advertiser_id, 'bid_price': bit_price, 'win':win, 'is_click': is_click, 'request_id':request_id})
-
-
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
@@ -77,19 +52,10 @@ class HealthHandler(tornado.web.RequestHandler):
 
 class WinHandler(tornado.web.RequestHandler):
     def post(self):
+        r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         data = tornado.escape.json_decode(self.request.body)
-        self.updateData(data['id'], data['price'], data['isClick'])
-
-    def updateData(self, request_id, second_price, is_click):
-        c = engine.connect()
-        try:
-            c.execute("""UPDATE requests SET second_price = {0}, is_click = {1} WHERE request_id = '{2}'""".format(
-                second_price, is_click, request_id))
-            c.close()
-        except exc.DBAPIError, e:
-            print(e)
-            # if e.connection_invalidated:
-
+        win_id = data['id']
+        r.get[win_id]
 
 application = tornado.web.Application([
     (r"/", MainHandler),
@@ -99,8 +65,8 @@ application = tornado.web.Application([
 )
 
 if __name__ == "__main__":
-    engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
-    document = CTR_Estimation()
+    # engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
+    # document = CTR_Estimation()
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
     server.start(0)
