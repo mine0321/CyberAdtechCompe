@@ -48,7 +48,7 @@ class Optimizer(object):
         if error_flag < 0:
             pre_cpc = 0
             pre_beta = 0
-            
+        
         # ニュートン法
         cpc_diff = cpc - pre_cpc
         beta_diff = beta - pre_beta

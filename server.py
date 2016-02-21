@@ -92,7 +92,7 @@ class CpcHandler(tornado.web.RequestHandler):
                 start_time=int(s[1])
         except exc.DBAPIError, e:
             print(e)
-        pre_time_list = [start_time for i in range(0,10)]
+        pre_time_list = [start_time+1 for i in range(0,10)]
         dict_data_output={"cpcs":cpcs,
                          "pre_cpcs":pre_cpcs,
                          "pre_cost_list":pre_cost_list,
