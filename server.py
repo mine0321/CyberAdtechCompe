@@ -149,7 +149,7 @@ class CpcHandler(tornado.web.RequestHandler):
                      "pre_cost_list":pre_cost_list,
                      "pre_time_list":pre_time_list
                         }
-        json_data_output=json.dumps(dict_data_input, indent=4)
+        json_data_output=json.dumps(dict_data_output, indent=4)
         r.set('json', json_data_output)
         try : 
             select=c.execute("SELECT id, UNIX_TIMESTAMP(created_at) as starttime FROM db.requests ORDER BY id LIMIT 1;")
