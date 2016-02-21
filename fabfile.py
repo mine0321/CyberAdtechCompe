@@ -42,5 +42,3 @@ def checkout(branch='master'):
 def supervisord():
     with settings(warn_only=True):
         sudo('supervisord -c /etc/supervisord.conf')
-
-# def gitconfig
