@@ -4,6 +4,7 @@ import tornado.httpserver
 from tornado.web import gen
 from tornado.escape import json_encode
 import numpy as np
+import threading
 
 import redis
 import json
@@ -35,9 +36,9 @@ class MainHandler(tornado.web.RequestHandler):
         bit = np.max(bit_list)
 
         self.responseJson(data['id'], bit, 0.1, advertiserId)
-        self.insertData(
-                data['id'], data['floorPrice'], data['site'], data['device'],
-                data['user'], advertiserId, bit, 0, 0, data['id'])
+        insert_thread = threading.Thread(target = self.insertData, args=[data['id'], data['floorPrice'], data['site'], data['device'],
+                                                                    data['user'], advertiserId, bit, 0, 0, data['id']])
+        insert_thread.start(self)
 
     def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
@@ -49,7 +50,6 @@ class MainHandler(tornado.web.RequestHandler):
         }
         self.write(json_encode(json))
 
-    @gen.coroutine
     def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
         c = engine.connect()
         try:
