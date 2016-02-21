@@ -60,7 +60,7 @@ class MainHandler(tornado.web.RequestHandler):
         # list_price = [ind for ind, val in enumerate(target) if val > floor]
 
         ind = random.randint(0, 9)
-        bit = random.uniform(0, target[ind]) * 100 * 0.001
+        bit = random.uniform(0, target[ind]) * 100 * 0.00001
         bit = bit
         # ind = random.randint(0, len(list_price)-1) #int(np.rand() +len(list_price))
 
