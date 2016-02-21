@@ -2,6 +2,7 @@ from fabric.api import sudo
 from fabric.api import run
 from fabric.api import env
 from fabric.api import cd
+from fabric.api import settings
 
 env.hosts = [
     "52.69.144.199",
@@ -21,9 +22,10 @@ def pull():
         sudo('git pull')
 
 def restart():
-    sudo('supervisorctl stop tornado')
-    sudo('pkill python')
-    sudo('supervisorctl start tornado')
+    with settings(warn_only=True):
+        sudo('supervisorctl stop tornado')
+        sudo('pkill python')
+        sudo('supervisorctl start tornado')
 
 def stop():
     sudo('supervisorctl stop tornado')
@@ -38,4 +40,7 @@ def checkout(branch='master'):
         sudo('git checkout {}'.format(branch))
 
 def supervisord():
-    sudo('supervisord -c /etc/supervisord.conf')
+    with settings(warn_only=True):
+        sudo('supervisord -c /etc/supervisord.conf')
+
+# def gitconfig
