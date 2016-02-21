@@ -40,7 +40,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.set_status(200)
         json = {
             'id': id,
-            'bidPrice': bit * a + b
+            'bidPrice': bit * a + b,
             'advertiserId': advertiserId,
         }
         self.write(json_encode(json))
