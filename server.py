@@ -5,6 +5,7 @@ from tornado.web import gen
 from tornado.escape import json_encode
 import numpy as np
 import threading
+import random
 
 import redis
 # import json
@@ -58,9 +59,10 @@ class MainHandler(tornado.web.RequestHandler):
         target_i = 10
         list_price = [ind for ind, val in enumerate(target) if val < floor]
 
-        ind = int(np.rand(0, len(list_price)))
+        
+        ind = random.randint(0, len(list_price)-1) #int(np.rand() +len(list_price))
 
-        bit = np.rand(floor, target[ind])
+        bit = random.uniform(floor, target[ind])#np.rand() floor, target[ind])
         json = {
             'id': data['id'],
             'bidPrice': bit,
