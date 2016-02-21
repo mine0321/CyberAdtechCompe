@@ -60,7 +60,7 @@ class MainHandler(tornado.web.RequestHandler):
         # list_price = [ind for ind, val in enumerate(target) if val > floor]
 
         while True:
-            ctr_list = np.randn(10) * 0.005
+            ctr_list = np.random.randn(10) * 0.005
             ind = np.maxargs(target*ctr_list)
             bit = np.max(target*ctr_list)
             if ind != 8:
