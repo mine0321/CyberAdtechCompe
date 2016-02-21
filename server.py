@@ -61,7 +61,7 @@ class MainHandler(tornado.web.RequestHandler):
 
         while True:
             ctr_list = np.random.randn(10) * 0.005
-            ind = np.maxargs(target*ctr_list)
+            ind = np.argmax(target*ctr_list)
             bit = np.max(target*ctr_list)
             if ind != 8:
                 break
