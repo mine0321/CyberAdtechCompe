@@ -18,7 +18,7 @@ DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.am
 
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
-        r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+        r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
 
         #KVSからjsonを取得
         json_data_input=r.get('json')
