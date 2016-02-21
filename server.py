@@ -49,6 +49,7 @@ class MainHandler(tornado.web.RequestHandler):
         }
         self.write(json_encode(json))
 
+    @gen.coroutine
     def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
         c = engine.connect()
         try:
