@@ -32,8 +32,8 @@ class MainHandler(tornado.web.RequestHandler):
         alpha_list = tornado.escape.json_decode(r.get('alpha'))
         beta_list = tornado.escape.json_decode(r.get('beta'))
 
-        alpha = [alpha_list[key] for key in list(alpha_list)]
-        beta = [beta_list[key] for key in list(beta_list)]
+        alpha = [float(alpha_list[key]) for key in list(alpha_list)]
+        beta = [float(beta_list[key]) for key in list(beta_list)]
 
         bit_list = 0.5 * np.array(cpc) * np.array(alpha) + np.array(beta)
         advertiserId = str(np.argmax(bit_list))
