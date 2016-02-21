@@ -79,7 +79,7 @@ class CpcHandler(tornado.web.RequestHandler):
     
     def initJson(self,r=None,c=None):
         if r==None:
-            r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+            r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         if c==None:
             c = engine.connect()
         #r.set("initFlag","hoge")
@@ -113,7 +113,7 @@ class CpcHandler(tornado.web.RequestHandler):
     
     def updatejson(self,ad_num):
         #r = redis.Redis(host='localhost', port=6379, db=0)    
-        r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+        r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         c = engine.connect()
         
         #DBにデータがあるかチェック
