@@ -18,7 +18,7 @@ DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.am
 
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
-        r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+        r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         data = tornado.escape.json_decode(self.request.body)
         cpc = r.get('cpc')
         r.set(data['id'],self.request.body)
@@ -56,7 +56,7 @@ class WinHandler(tornado.web.RequestHandler):
         data = tornado.escape.json_decode(self.request.body)
         win_id = data['id']
         json = r.get[win_id]
-        
+
 
     def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
         c = engine.connect()
