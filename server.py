@@ -60,7 +60,7 @@ class MainHandler(tornado.web.RequestHandler):
         list_price = [ind for ind, val in enumerate(target) if val > floor]
 
 
-        ind = random.randint(0, len(list_price)) #int(np.rand() +len(list_price))
+        ind = random.randint(0, len(list_price)-1) #int(np.rand() +len(list_price))
 
         bit = random.uniform(floor, target[ind])#np.rand() floor, target[ind])
         json = {
@@ -68,6 +68,7 @@ class MainHandler(tornado.web.RequestHandler):
             'bidPrice': bit,
             'advertiserId': str(ind),
         }
+        self.write(json_encode(json))
 
 
     #     alpha_list = tornado.escape.json_decode(r.get('alpha'))
