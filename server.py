@@ -32,7 +32,7 @@ class MainHandler(tornado.web.RequestHandler):
         alpha_list = tornado.escape.json_decode(r.get('alpha'))
         beta_list = tornado.escape.json_decode(r.get('beta'))
 
-        bit_list = 0.5 * np.array(cpc) * np.array(alpha_list) + beta_list
+        bit_list = 0.5 * np.array(cpc) * np.array(alpha_list) + np.array(beta_list)
         advertiserId = str(np.argmax(bit_list))
         bit = np.max(bit_list)
         self.responseJson(data['id'], bit, advertiserId, alpha_list[advertiserId], beta_list[advertiserId])
