@@ -28,7 +28,7 @@ class MainHandler(tornado.web.RequestHandler):
             "user": "a9102910201",
             "test": "0",
         }
-        ctr = document.estimation(data)
+        ctr = 0.7#document.estimation(data)
         cpc = np.arange(0, 10)
         bit_list = np.array(ctr) * np.array(cpc)
         advertiserId = str(np.argmax(bit_list))
