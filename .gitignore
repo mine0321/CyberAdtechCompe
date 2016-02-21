@@ -108,3 +108,5 @@ crashlytics.properties
 crashlytics-build.properties
 
 *.pyc
+
+fabfile.py
