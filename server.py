@@ -17,12 +17,12 @@ DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.am
 
 
 class MainHandler(tornado.web.RequestHandler):
-    def get(self):
+    def post(self):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+        data = tornado.escape.json_decode(self.request.body)
         cpc = r.get('cpc')
         r.set(data['id'],self.request.body)
 
-        data = tornado.escape.json_decode(self.request.body)
         # ctr = document.estimation(data)
         cpc = np.array(cpc.items())
         # bit_list = np.array(ctr) * np.array(cpc)
@@ -55,7 +55,18 @@ class WinHandler(tornado.web.RequestHandler):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         data = tornado.escape.json_decode(self.request.body)
         win_id = data['id']
-        r.get[win_id]
+        json = r.get[win_id]
+        
+
+    def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
+        c = engine.connect()
+        try:
+            c.execute("""INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7}, '{8}')""".format(floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id))
+            c.close()
+        except exc.DBAPIError, e:
+            print(e)
+            # if e.connection_invalidated:
+            #     pass
 
 application = tornado.web.Application([
     (r"/", MainHandler),
@@ -65,7 +76,7 @@ application = tornado.web.Application([
 )
 
 if __name__ == "__main__":
-    # engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
+    engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
     # document = CTR_Estimation()
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
