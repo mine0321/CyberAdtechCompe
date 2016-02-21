@@ -19,36 +19,76 @@ DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.am
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
-        cpc = r.get('cpc')
-        r.set(data['id'], self.request.body)
+        # cpc = r.get('cpc')
+        # r.set(data['id'], self.request.body)
 
         # ctr = document.estimation(data)
         # cpc = np.array(cpc.items())
-        cpc = np.ones(10)
+        # cpc = np.ones(10)
         # bit_list = np.array(ctr) * np.array(cpc)
 
 
-        alpha_list = tornado.escape.json_decode(r.get('alpha'))
-        beta_list = tornado.escape.json_decode(r.get('beta'))
+        if data['floorPrice'] is None:
+            floor =0
+        else:
+            floor = float(data['floorPrice'])
+# '1' : 200,
+#             '2' : 133,
+#             '3' : 100,
+#             '4' : 67,
+#             '5' : 57,
+#             '6' : 44,
+#             '7' : 50,
+#             '8' : 44,
+#             '9' : 40,
+#             '10' : 36,
+        target = [
+             200,
+             133,
+             100,
+             67,
+             57,
+             44,
+             50,
+             44,
+             40,
+             36,
+        ]
 
-        alpha = [float(alpha_list[key]) for key in list(alpha_list)]
-        beta = [float(beta_list[key]) for key in list(beta_list)]
+        target_i = 10
+        list_price = [ind for ind, val in enumerate(target) if val < floor]
 
-        bit_list = 0.5 * np.array(cpc) * np.array(alpha) + np.array(beta)
-        advertiserId = str(np.argmax(bit_list))
-        bit = np.max(bit_list)
-        # self.responseJson(data['id'], bit, advertiserId, alpha[advertiserId], beta[advertiserId])
-        self.responseJson(data['id'], bit, advertiserId)
+        ind = int(np.rand(0, len(list_price)))
 
-    def responseJson(self, id, bit, advertiserId):
-        self.set_header('Content-Type', 'application/json')
-        self.set_status(200)
+        bit = np.rand(floor, target[ind])
         json = {
-            'id': id,
-            'bidPrice': bit,# * a + b,
-            'advertiserId': advertiserId,
+            'id': data['id'],
+            'bidPrice': bit,
+            'advertiserId': str(ind),
         }
-        self.write(json_encode(json))
+
+
+    #     alpha_list = tornado.escape.json_decode(r.get('alpha'))
+    #     beta_list = tornado.escape.json_decode(r.get('beta'))
+    #
+    #     alpha = [float(alpha_list[key]) for key in list(alpha_list)]
+    #     beta = [float(beta_list[key]) for key in list(beta_list)]
+    #
+    #     bit_list = 0.5 * np.array(cpc) * np.array(alpha) + np.array(beta)
+    #     advertiserId = str(np.argmax(bit_list))
+    #     bit = np.max(bit_list)
+    #     # self.responseJson(data['id'], bit, advertiserId, alpha[advertiserId], beta[advertiserId])
+    #     self.responseJson(data['id'], bit, advertiserId)
+    #
+    # def responseJson(self, id, bit, advertiserId):
+    #     self.set_header('Content-Type', 'application/json')
+    #     self.set_status(200)
+    #     json = {
+    #         'id': id,
+    #         'bidPrice': bit,# * a + b,
+    #         'advertiserId': advertiserId,
+    #     }
+    #     self.write(json_encode(json))
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
@@ -57,10 +97,10 @@ class HealthHandler(tornado.web.RequestHandler):
 
 class WinHandler(tornado.web.RequestHandler):
     def post(self):
-        r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+        # r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         data = tornado.escape.json_decode(self.request.body)
         win_id = data['id']
-        json = r.get(win_id)
+        # json = r.get(win_id)
 
 
     # def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
@@ -83,7 +123,7 @@ application = tornado.web.Application([
 if __name__ == "__main__":
     # engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
     # document = CTR_Estimation()
-    r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+    # r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
     server.start(9)
