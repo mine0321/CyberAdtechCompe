@@ -35,9 +35,9 @@ class MainHandler(tornado.web.RequestHandler):
         bit = np.max(bit_list)
 
         self.responseJson(data['id'], bit, 0.1, advertiserId)
-        self.insertData(
-                data['id'], data['floorPrice'], data['site'], data['device'],
-                data['user'], advertiserId, bit, 0, 0, data['id'])
+        # self.insertData(
+        #         data['id'], data['floorPrice'], data['site'], data['device'],
+        #         data['user'], advertiserId, bit, 0, 0, data['id'])
 
     def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
