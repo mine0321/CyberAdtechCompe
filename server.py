@@ -53,7 +53,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
-        print("Hello")
+        self.write("Hello")
 
 class WinHandler(tornado.web.RequestHandler):
     def post(self):
