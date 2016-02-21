@@ -15,10 +15,18 @@ from sample_notebook.CTR_EstimationModel import CTR_Estimation
 DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.amazonaws.com:3306/db'
 
 class MainHandler(tornado.web.RequestHandler):
-    def post(self):
+    def get(self):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         cpc = int(r.get('cpctest'))
-        data = tornado.escape.json_decode(self.request.body)
+        # data = tornado.escape.json_decode(self.request.body)
+        data = tornado.escape.json_decode({
+            "id" : "ididid",
+    "floorPrice" : None,
+    "site" : "medianame",
+    "device" : "device",
+    "user" : "a9102910201",
+    "test" : 0
+        })
         ctr = document.estimation(data)
         cpc = np.arange(0, 10)
         bit_list = np.array(ctr) * np.array(cpc)
