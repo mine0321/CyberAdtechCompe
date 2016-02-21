@@ -25,7 +25,7 @@ class MainHandler(tornado.web.RequestHandler):
     "site" : "medianame",
     "device" : "device",
     "user" : "a9102910201",
-    "test" : 0
+    "test" : "0",
         })
         ctr = document.estimation(data)
         cpc = np.arange(0, 10)
