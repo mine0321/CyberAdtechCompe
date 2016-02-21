@@ -1,3 +1,4 @@
+# coding: utf-8
 import tornado.ioloop
 import tornado.web
 import tornado.httpserver
@@ -7,6 +8,7 @@ import numpy as np
 
 import redis
 import json
+import time as ti
 
 from sqlalchemy import create_engine, exc
 from sample_notebook.CPC_Optimizer import Optimizer
@@ -80,7 +82,7 @@ class CpcHandler(tornado.web.RequestHandler):
             r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         if c==None:
             c = engine.connect()
-        r.set("initFlag","hoge")
+        #r.set("initFlag","hoge")
         cpcs = [200, 133 ,100 ,80 ,67 ,57 ,50 ,44 ,40 ,36 ]#target_cpcを初期値とする
         pre_cpcs = [0 for i in range(0,10)]#0を初期値とする
         cost_list=[0 for i in range(0,10)]#広告主毎の最初から現在までにかかった費用
@@ -89,7 +91,10 @@ class CpcHandler(tornado.web.RequestHandler):
         try : 
             select=c.execute("SELECT id, UNIX_TIMESTAMP(created_at) as starttime FROM db.requests ORDER BY id LIMIT 1;")
             for s in select:
-                start_time=int(s[1])
+                if s[1] != None:
+                    start_time=int(s[1])
+            if s[1] == None:
+                start_time = ti.time()
         except exc.DBAPIError, e:
             print(e)
         pre_time_list = [start_time+1 for i in range(0,10)]
@@ -100,24 +105,39 @@ class CpcHandler(tornado.web.RequestHandler):
                         }
         json_data_output=json.dumps(dict_data_output, indent=4)#KVSから取ってくる値
         r.set('json', json_data_output)
-        
     
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
+        ad_num = int(data["ad_num"])
+        self.updatejson(ad_num)
+    
+    def updatejson(self,ad_num):
+        #r = redis.Redis(host='localhost', port=6379, db=0)    
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         c = engine.connect()
-        #キーがいないなら初期値を設定(starttimeがいるのでこれは重要)
-        if not r.exists("initFlag"):
-            self.init_json(r,c)
         
-        ad_num = int(data["ad_num"])
+        #DBにデータがあるかチェック
+        isData = False
+        try : 
+            select=c.execute("SELECT id, UNIX_TIMESTAMP(created_at) as starttime FROM db.requests ORDER BY id LIMIT 1;")
+            for s in select:
+                isData=True
+        except exc.DBAPIError, e:
+            print(e)
+        
+        #jsonにキーがいない、もしくはまだデータが入っていないならjsonに初期値を設定
+        if not r.exists("json") or isData==False:
+            self.initJson(r,c)
+        
+        
         
         #DBから使った費用を取得
         cost_list=[0 for i in range(0,10)]
         try:
             select=c.execute("SELECT advertiser_id,sum(second_price) as cost FROM db.requests GROUP BY advertiser_id;")
             for s in select:
-                cost_list[int(s[0])]=int(s[1])
+                if s[1] == None:cost_list[int(s[0])]=0
+                else :cost_list[int(s[0])]=int(s[1])
         except exc.DBAPIError, e:
             print(e)
 
@@ -126,7 +146,12 @@ class CpcHandler(tornado.web.RequestHandler):
         try : 
             select=c.execute("SELECT id, UNIX_TIMESTAMP(created_at) as starttime FROM db.requests ORDER BY id LIMIT 1;")
             for s in select:
-                start_time=int(s[1])
+                if s[1] != None:
+                    start_time=int(s[1])
+            if s[1] == None:
+                start_time = ti.time()
+            
+                
         except exc.DBAPIError, e:
             print(e)
         
@@ -152,10 +177,7 @@ class CpcHandler(tornado.web.RequestHandler):
         json_data_output=json.dumps(dict_data_output, indent=4)
         r.set('json', json_data_output)
         try : 
-            select=c.execute("SELECT id, UNIX_TIMESTAMP(created_at) as starttime FROM db.requests ORDER BY id LIMIT 1;")
-            for s in select:
-                start_time=int(s[1])
-                c.close()
+            c.close()
         except exc.DBAPIError, e:
             print(e)
         

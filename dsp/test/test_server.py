@@ -15,9 +15,9 @@ from tornado.httpclient import HTTPError
 class TestServer(AsyncTestCase):
     @tornado.testing.gen_test
     def test_http_fetch(self):
-        print("testMainHandler")
+        print("testCPCHandler")
         client = AsyncHTTPClient(self.io_loop)
-        response = yield client.fetch("http://localhost:8080")
+        response = yield client.fetch("http://localhost:8080/cpc")
         # Test contents of response
         self.assertEqual("hello world", response.body)
 
