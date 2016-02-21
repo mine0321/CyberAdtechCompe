@@ -21,7 +21,7 @@ class MainHandler(tornado.web.RequestHandler):
         r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         data = tornado.escape.json_decode(self.request.body)
         cpc = r.get('cpc')
-        r.set(data['id'],self.request.body)
+        r.set(data['id'], self.request.body)
 
         # ctr = document.estimation(data)
         # cpc = np.array(cpc.items())
@@ -32,17 +32,21 @@ class MainHandler(tornado.web.RequestHandler):
         alpha_list = tornado.escape.json_decode(r.get('alpha'))
         beta_list = tornado.escape.json_decode(r.get('beta'))
 
-        bit_list = 0.5 * np.array(cpc) * np.array(alpha_list) + np.array(beta_list)
+        alpha = [alpha_list[key] for key in list(alpha_list)]
+        beta = [beta_list[key] for key in list(beta_list)]
+
+        bit_list = 0.5 * np.array(cpc) * np.array(alpha) + np.array(beta)
         advertiserId = str(np.argmax(bit_list))
         bit = np.max(bit_list)
-        self.responseJson(data['id'], bit, advertiserId, alpha_list[advertiserId], beta_list[advertiserId])
+        # self.responseJson(data['id'], bit, advertiserId, alpha[advertiserId], beta[advertiserId])
+        self.responseJson(data['id'], bit, advertiserId)
 
-    def responseJson(self, id, bit, advertiserId, a ,b):
+    def responseJson(self, id, bit, advertiserId):
         self.set_header('Content-Type', 'application/json')
         self.set_status(200)
         json = {
             'id': id,
-            'bidPrice': bit * a + b,
+            'bidPrice': bit,# * a + b,
             'advertiserId': advertiserId,
         }
         self.write(json_encode(json))
