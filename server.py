@@ -102,7 +102,7 @@ class HealthHandler(tornado.web.RequestHandler):
 
 class WinHandler(tornado.web.RequestHandler):
     def post(self):
-        r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+        r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         data = tornado.escape.json_decode(self.request.body)
         win_id = data['id']
         r.set("win:{}".format(win_id), data)
