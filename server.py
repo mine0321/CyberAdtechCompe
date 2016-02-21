@@ -18,7 +18,6 @@ DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.am
 
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
-        r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         data = tornado.escape.json_decode(self.request.body)
         cpc = r.get('cpc')
         r.set(data['id'], self.request.body)
@@ -84,6 +83,7 @@ application = tornado.web.Application([
 if __name__ == "__main__":
     # engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
     # document = CTR_Estimation()
+    r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
     server.start(9)
