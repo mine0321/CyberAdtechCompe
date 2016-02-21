@@ -17,10 +17,14 @@ DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.am
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
-        cpc = int(r.get('cpctest'))
+
+        #KVSからjsonを取得
+        json_data_input=r.get('json')
+        dict_data_input=json.loads(json_data_input)#デコードする
+        cpc=dict_data_input["cpcs"]
+        
         data = tornado.escape.json_decode(self.request.body)
         ctr = document.estimation(data)
-        cpc = np.arange(0, 10)
         bit_list = np.array(ctr) * np.array(cpc)
         advertiserId = str(np.argmax(bit_list))
         bit = np.max(bit_list)
@@ -70,32 +74,41 @@ class WinHandler(tornado.web.RequestHandler):
             # if e.connection_invalidated:
 
 class CpcHandler(tornado.web.RequestHandler):
+    
+    def initJson(self,r=None,c=None):
+        if r==None:
+            r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
+        if c==None:
+            c = engine.connect()
+        r.set("initFlag","hoge")
+        cpcs = [200, 133 ,100 ,80 ,67 ,57 ,50 ,44 ,40 ,36 ]#target_cpcを初期値とする
+        pre_cpcs = [0 for i in range(0,10)]#0を初期値とする
+        cost_list=[0 for i in range(0,10)]#広告主毎の最初から現在までにかかった費用
+        pre_cost_list= [0 for i in range(0,10)]#0を初期値とする
+        start_time=None
+        try : 
+            select=c.execute("SELECT id, UNIX_TIMESTAMP(created_at) as starttime FROM db.requests ORDER BY id LIMIT 1;")
+            for s in select:
+                start_time=int(s[1])
+        except exc.DBAPIError, e:
+            print(e)
+        pre_time_list = [start_time for i in range(0,10)]
+        dict_data_output={"cpcs":cpcs,
+                         "pre_cpcs":pre_cpcs,
+                         "pre_cost_list":pre_cost_list,
+                         "pre_time_list":pre_time_list
+                        }
+        json_data_output=json.dumps(dict_data_output, indent=4)#KVSから取ってくる値
+        r.set('json', json_data_output)
+        
+    
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         c = engine.connect()
         #キーがいないなら初期値を設定(starttimeがいるのでこれは重要)
-        if not r.exists("json"):
-            cpcs = [200, 133 ,100 ,80 ,67 ,57 ,50 ,44 ,40 ,36 ]#target_cpcを初期値とする
-            pre_cpcs = [0 for i in range(0,10)]#0を初期値とする
-            cost_list=[0 for i in range(0,10)]#広告主毎の最初から現在までにかかった費用
-            pre_cost_list= [0 for i in range(0,10)]#0を初期値とする
-            start_time=None
-            try : 
-                select=c.execute("SELECT id, UNIX_TIMESTAMP(created_at) as starttime FROM db.requests ORDER BY id LIMIT 1;")
-                for s in select:
-                    start_time=int(s[1])
-            except exc.DBAPIError, e:
-                print(e)
-            pre_time_list = [start_time for i in range(0,10)]
-            dict_data_output={"cpcs":cpcs,
-                         "pre_cpcs":pre_cpcs,
-                         "pre_cost_list":pre_cost_list,
-                         "pre_time_list":pre_time_list,
-                         "starttime":start_time
-                        }
-            json_data_output=json.dumps(dict_data_output, indent=4)#KVSから取ってくる値
-            r.set('json', json_data_output)
+        if not r.exists("initFlag"):
+            self.init_json(r,c)
         
         ad_num = int(data["ad_num"])
         
@@ -105,7 +118,15 @@ class CpcHandler(tornado.web.RequestHandler):
             select=c.execute("SELECT advertiser_id,sum(second_price) as cost FROM db.requests GROUP BY advertiser_id;")
             for s in select:
                 cost_list[int(s[0])]=int(s[1])
-            c.close()
+        except exc.DBAPIError, e:
+            print(e)
+
+        #DBからstart_timeを取得
+        start_time=None
+        try : 
+            select=c.execute("SELECT id, UNIX_TIMESTAMP(created_at) as starttime FROM db.requests ORDER BY id LIMIT 1;")
+            for s in select:
+                start_time=int(s[1])
         except exc.DBAPIError, e:
             print(e)
         
@@ -116,22 +137,28 @@ class CpcHandler(tornado.web.RequestHandler):
         pre_cpcs=     dict_data_input["pre_cpcs"]
         pre_cost_list=dict_data_input["pre_cost_list"]
         pre_time_list=dict_data_input["pre_time_list"]
-        starttime=    dict_data_input["starttime"]
         
         #Optimizer実行して
         document = Optimizer()
         cpcs, pre_cpcs, pre_cost_list, pre_time_list = document.optimizer(
-            ad_num, cpcs, pre_cpcs, cost_list, pre_cost_list, pre_time_list,starttime)
+            ad_num, cpcs, pre_cpcs, cost_list, pre_cost_list, pre_time_list,start_time)
         
         #KVSに値を保存する
         dict_data_output={"cpcs":cpcs,
                      "pre_cpcs":pre_cpcs,
                      "pre_cost_list":pre_cost_list,
-                     "pre_time_list":pre_time_list,
-                     "starttime":starttime
+                     "pre_time_list":pre_time_list
                         }
         json_data_output=json.dumps(dict_data_input, indent=4)
         r.set('json', json_data_output)
+        try : 
+            select=c.execute("SELECT id, UNIX_TIMESTAMP(created_at) as starttime FROM db.requests ORDER BY id LIMIT 1;")
+            for s in select:
+                start_time=int(s[1])
+                c.close()
+        except exc.DBAPIError, e:
+            print(e)
+        
 
 
 application = tornado.web.Application([
