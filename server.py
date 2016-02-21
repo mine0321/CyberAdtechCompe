@@ -17,7 +17,7 @@ DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.am
 
 
 class MainHandler(tornado.web.RequestHandler):
-    def get(self):
+    def post(self):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         cpc = int(r.get('cpctest'))
         # data = tornado.escape.json_decode(self.request.body)
