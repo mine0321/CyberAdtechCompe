@@ -14,19 +14,20 @@ from sample_notebook.CTR_EstimationModel import CTR_Estimation
 
 DATABASE = 'mysql://team_f:password@dataallin.ca6eqefmtfhj.ap-northeast-1.rds.amazonaws.com:3306/db'
 
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         cpc = int(r.get('cpctest'))
         # data = tornado.escape.json_decode(self.request.body)
-        data = tornado.escape.json_decode({
-            "id" : "ididid",
-    "floorPrice" : None,
-    "site" : "medianame",
-    "device" : "device",
-    "user" : "a9102910201",
-    "test" : "0",
-        })
+        data = {
+            "id": "ididid",
+            "floorPrice": None,
+            "site": "medianame",
+            "device": "device",
+            "user": "a9102910201",
+            "test": "0",
+        }
         ctr = document.estimation(data)
         cpc = np.arange(0, 10)
         bit_list = np.array(ctr) * np.array(cpc)
@@ -35,15 +36,15 @@ class MainHandler(tornado.web.RequestHandler):
 
         self.responseJson(data['id'], bit, 0.1, advertiserId)
         self.insertData(
-            data['id'], data['floorPrice'], data['site'], data['device'],
-            data['user'], advertiserId, bit, 0, 0, data['id'])
+                data['id'], data['floorPrice'], data['site'], data['device'],
+                data['user'], advertiserId, bit, 0, 0, data['id'])
 
     def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
         self.set_status(200)
         json = {
             'id': id,
-            'bidPrice': cpc * ctr, #[advertiserId],
+            'bidPrice': cpc * ctr,  # [advertiserId],
             'advertiserId': advertiserId,
         }
         self.write(json_encode(json))
@@ -51,7 +52,9 @@ class MainHandler(tornado.web.RequestHandler):
     def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
         c = engine.connect()
         try:
-            c.execute("""INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7}, '{8}')""".format(floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id))
+            c.execute(
+                """INSERT INTO requests (floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7}, '{8}')""".format(
+                    floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id))
             c.close()
         except exc.DBAPIError, e:
             print(e)
@@ -63,6 +66,7 @@ class HealthHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("Hello")
 
+
 class WinHandler(tornado.web.RequestHandler):
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
@@ -71,11 +75,13 @@ class WinHandler(tornado.web.RequestHandler):
     def updateData(self, request_id, second_price, is_click):
         c = engine.connect()
         try:
-            c.execute("""UPDATE requests SET second_price = {0}, is_click = {1} WHERE request_id = '{2}'""".format(second_price, is_click, request_id))
+            c.execute("""UPDATE requests SET second_price = {0}, is_click = {1} WHERE request_id = '{2}'""".format(
+                second_price, is_click, request_id))
             c.close()
         except exc.DBAPIError, e:
             print(e)
             # if e.connection_invalidated:
+
 
 application = tornado.web.Application([
     (r"/", MainHandler),
