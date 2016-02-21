@@ -9,6 +9,8 @@ import threading
 import redis
 import json
 
+import logging
+
 from sqlalchemy import create_engine, exc
 from sample_notebook.CPC_Optimizer import Optimizer
 from sample_notebook.CTR_EstimationModel import CTR_Estimation
@@ -29,13 +31,14 @@ class MainHandler(tornado.web.RequestHandler):
             "user": "a9102910201",
             "test": "0",
         }
-        ctr = document.estimation(data)
+        ctr = 0.5#document.estimation(data)
         cpc = np.arange(0, 10)
         bit_list = np.array(ctr) * np.array(cpc)
         advertiserId = str(np.argmax(bit_list))
         bit = np.max(bit_list)
 
         self.responseJson(data['id'], bit, 0.1, advertiserId)
+        self.logFile(data['id'], data['floorPrice'], data['site'], data['device'], data['user'], advertiserId, bit, 0, 0, data['id'])
         # insert_thread = threading.Thread(target = self.insertData, args=[data['id'], data['floorPrice'], data['site'], data['device'],
         #                                                             data['user'], advertiserId, bit, 0, 0, data['id']])
         # insert_thread.start()
@@ -61,6 +64,10 @@ class MainHandler(tornado.web.RequestHandler):
             print(e)
             # if e.connection_invalidated:
             #     pass
+
+    def logFile(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
+        logging.log(100, {'id':id, 'floor_price':floor_price, 'device': device, 'user': user, 'advertiser_id': advertiser_id, 'bid_price': bit_price, 'win':win, 'is_click': is_click, 'request_id':request_id})
+
 
 
 class HealthHandler(tornado.web.RequestHandler):
