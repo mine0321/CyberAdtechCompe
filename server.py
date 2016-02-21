@@ -55,15 +55,17 @@ class MainHandler(tornado.web.RequestHandler):
              40,
              36,
         ])
-        ctr_list = np.randn(10)
+
         # target_i = 10
         # list_price = [ind for ind, val in enumerate(target) if val > floor]
 
         while True:
+            ctr_list = np.randn(10) * 0.01
             ind = np.maxargs(target*ctr_list)
             bit = np.max(target*ctr_list)
             if ind != 8:
                 break
+
 
         # bit = random.uniform(0, target[ind]) * 1000 * 0.00001
         # bit = bit
