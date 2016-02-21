@@ -3,6 +3,7 @@ import tornado.web
 import tornado.httpserver
 from tornado.web import gen
 from tornado.escape import json_encode
+import numpy as np
 
 import redis
 import json
@@ -19,10 +20,14 @@ class MainHandler(tornado.web.RequestHandler):
         cpc = int(r.get('cpctest'))
         data = tornado.escape.json_decode(self.request.body)
         ctr = document.estimation(data)
-        advertiserId = '1'
+        bit_list = np.array(ctr) * np.array(cpc)
+        advertiserId = str(np.argmax(bit_list))
+        bit = np.max(bit_list)
 
-        self.responseJson(data['id'], cpc, 0.1, advertiserId)
-        self.insertData(data['id'], data['floorPrice'], data['site'], data['device'], data['user'], 1, 20, 0, 0, data['id'])
+        self.responseJson(data['id'], bit, 0.1, advertiserId)
+        self.insertData(
+            data['id'], data['floorPrice'], data['site'], data['device'],
+            data['user'], advertiserId, bit, 0, 0, data['id'])
 
     def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
