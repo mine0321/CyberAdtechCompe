@@ -28,16 +28,16 @@ class MainHandler(tornado.web.RequestHandler):
             "user": "a9102910201",
             "test": "0",
         }
-        ctr = 0.7#document.estimation(data)
+        ctr = document.estimation(data)
         cpc = np.arange(0, 10)
         bit_list = np.array(ctr) * np.array(cpc)
         advertiserId = str(np.argmax(bit_list))
         bit = np.max(bit_list)
 
         self.responseJson(data['id'], bit, 0.1, advertiserId)
-        # self.insertData(
-        #         data['id'], data['floorPrice'], data['site'], data['device'],
-        #         data['user'], advertiserId, bit, 0, 0, data['id'])
+        self.insertData(
+                data['id'], data['floorPrice'], data['site'], data['device'],
+                data['user'], advertiserId, bit, 0, 0, data['id'])
 
     def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
@@ -91,9 +91,9 @@ application = tornado.web.Application([
 )
 
 if __name__ == "__main__":
-    engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
+    engine = create_engine(DATABASE, pool_size=100, max_overflow=0)
     document = CTR_Estimation()
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
-    server.start(0)
+    server.start(9)
     tornado.ioloop.IOLoop.current().start()
