@@ -53,7 +53,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 class HealthHandler(tornado.web.RequestHandler):
     def get(self):
-        print("Hello")
+        self.write("Hello")
 
 class WinHandler(tornado.web.RequestHandler):
     def post(self):
@@ -143,9 +143,9 @@ application = tornado.web.Application([
 )
 
 if __name__ == "__main__":
-    engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
+    engine = create_engine(DATABASE, pool_size=100, max_overflow=0)
     document = CTR_Estimation()
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
-    server.start(0)
+    server.start(9)
     tornado.ioloop.IOLoop.current().start()
