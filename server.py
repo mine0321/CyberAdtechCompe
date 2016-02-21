@@ -36,9 +36,9 @@ class MainHandler(tornado.web.RequestHandler):
         bit = np.max(bit_list)
 
         self.responseJson(data['id'], bit, 0.1, advertiserId)
-        insert_thread = threading.Thread(target = self.insertData, args=[data['id'], data['floorPrice'], data['site'], data['device'],
-                                                                    data['user'], advertiserId, bit, 0, 0, data['id']])
-        insert_thread.start()
+        # insert_thread = threading.Thread(target = self.insertData, args=[data['id'], data['floorPrice'], data['site'], data['device'],
+        #                                                             data['user'], advertiserId, bit, 0, 0, data['id']])
+        # insert_thread.start()
 
     def responseJson(self, id, cpc, ctr, advertiserId):
         self.set_header('Content-Type', 'application/json')
