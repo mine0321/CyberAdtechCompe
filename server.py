@@ -43,7 +43,7 @@ class MainHandler(tornado.web.RequestHandler):
 #             '8' : 44,
 #             '9' : 40,
 #             '10' : 36,
-        target = [
+        target = np.array([
              200,
              133,
              100,
@@ -54,18 +54,19 @@ class MainHandler(tornado.web.RequestHandler):
              44,
              40,
              36,
-        ]
-
-        target_i = 10
+        ])
+        ctr_list = np.randn(10)
+        # target_i = 10
         # list_price = [ind for ind, val in enumerate(target) if val > floor]
 
         while True:
-            ind = random.randint(0, 9)
+            ind = np.maxargs(target*ctr_list)
+            bit = np.max(target*ctr_list)
             if ind != 8:
                 break
 
-        bit = random.uniform(0, target[ind]) * 1000 * 0.00001
-        bit = bit
+        # bit = random.uniform(0, target[ind]) * 1000 * 0.00001
+        # bit = bit
         # ind = random.randint(0, len(list_price)-1) #int(np.rand() +len(list_price))
 
         #bit = random.uniform(floor, target[ind])#np.rand() floor, target[ind])
@@ -130,7 +131,7 @@ application = tornado.web.Application([
 )
 
 if __name__ == "__main__":
-    # engine = create_engine(DATABASE, pool_size=20, max_overflow=0)
+    # engine = create_engine(DATABASE, pool_size=20, m88ax_overflow=0)
     # document = CTR_Estimation()
     # r = redis.StrictRedis(host='elc-001.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
     server = tornado.httpserver.HTTPServer(application)
