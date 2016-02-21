@@ -105,7 +105,7 @@ class WinHandler(tornado.web.RequestHandler):
         r = redis.StrictRedis(host='elc-002.wlnxen.0001.apne1.cache.amazonaws.com', port=6379, db=0)
         data = tornado.escape.json_decode(self.request.body)
         win_id = data['id']
-        json = r.get(win_id)
+        r.set("win:{}".format(win_id), data)
 
 
     # def insertData(self, id, floor_price, site, device, user, advertiser_id, bit_price, win, is_click, request_id):
