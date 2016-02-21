@@ -95,5 +95,5 @@ if __name__ == "__main__":
     document = CTR_Estimation()
     server = tornado.httpserver.HTTPServer(application)
     server.bind(8080)
-    server.start(2)
+    server.start(0)
     tornado.ioloop.IOLoop.current().start()
